@@ -138,8 +138,29 @@ export default function ResultsDisplay({ result, error }: ResultsDisplayProps) {
           </div>
         </div>
 
+        {/* CACHE WARNING when data scanned is 0 */}
+        {result.dataScanned === 0 && (
+          <div className="mt-4 p-4 bg-gradient-to-r from-yellow-50 to-orange-50 border-4 border-yellow-500 rounded-lg animate-pulse">
+            <div className="flex items-center gap-3">
+              <div className="text-4xl">⚠️</div>
+              <div>
+                <p className="font-black text-yellow-900 text-lg">
+                  CACHED RESULTS - Performance Metrics May Be Misleading!
+                </p>
+                <p className="text-sm text-yellow-900 font-semibold">
+                  This query returned <strong>0 Bytes scanned</strong>, indicating Firebolt served results from cache. 
+                  Cached queries are ALWAYS fast regardless of optimization.
+                </p>
+                <p className="text-xs text-yellow-800 mt-2">
+                  🔄 <strong>For accurate comparison:</strong> Wait 5-10 minutes for cache to expire, then run <strong>DISABLED first</strong> → <strong>OPTIMIZED second</strong>
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Prominent optimization callout */}
-        {result.optimized && result.executionTime < 1 && (
+        {result.optimized && result.executionTime < 1 && result.dataScanned > 0 && (
           <div className="mt-4 p-4 bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-400 rounded-lg">
             <div className="flex items-center gap-3">
               <div className="text-4xl">🚀</div>
@@ -159,23 +180,25 @@ export default function ResultsDisplay({ result, error }: ResultsDisplayProps) {
           </div>
         )}
 
-        {!result.optimized && result.executionTime > 0.5 && (
-          <div className="mt-4 p-4 bg-gradient-to-r from-red-50 to-orange-50 border-2 border-red-400 rounded-lg">
+        {!result.optimized && result.executionTime > 0.1 && result.dataScanned > 0 && (
+          <div className="mt-4 p-4 bg-gradient-to-r from-red-50 to-orange-50 border-4 border-red-500 rounded-lg">
             <div className="flex items-center gap-3">
               <div className="text-4xl">🐌</div>
               <div>
-                <p className="font-bold text-red-900 text-lg">
-                  Baseline Performance (Optimization Disabled)
+                <p className="font-black text-red-900 text-xl">
+                  ✅ STEP 1 COMPLETE: Baseline Established!
                 </p>
-                <p className="text-sm text-red-800">
-                  Query took <strong>{result.executionTime.toFixed(2)}s</strong> scanning <strong>{formatBytes(result.dataScanned)}</strong>.
-                  This represents the performance WITHOUT late materialization.
+                <p className="text-sm text-red-800 font-semibold">
+                  Query took <strong>{result.executionTime.toFixed(3)}s</strong> scanning <strong>{formatBytes(result.dataScanned)}</strong>.
+                  This is the performance WITHOUT late materialization (cold cache).
                 </p>
               </div>
             </div>
-            <p className="text-xs text-red-700 mt-2 italic">
-              💡 Tip: Now run the "OPTIMIZED" version to see the dramatic improvement!
-            </p>
+            <div className="mt-3 p-3 bg-green-50 border-2 border-green-500 rounded">
+              <p className="text-sm text-green-900 font-bold">
+                👉 NEXT STEP: Now run the &quot;✅ OPTIMIZED: Events Top 10&quot; query above to see the 4-10x speedup!
+              </p>
+            </div>
           </div>
         )}
       </div>

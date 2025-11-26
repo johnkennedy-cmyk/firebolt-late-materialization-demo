@@ -2,13 +2,23 @@ import { PrebuiltQuery } from './types';
 
 export const prebuiltQueries: PrebuiltQuery[] = [
   {
+    id: 'events-top-10-disabled',
+    title: '🔴 STEP 1: DISABLED (Baseline) - RUN THIS FIRST!',
+    description: 'Establishes baseline performance WITHOUT late materialization',
+    useCase: '⚠️ CRITICAL: Run this query FIRST (before OPTIMIZED) to establish the baseline with cold cache. If you run queries out of order, caching will hide the performance difference!',
+    sql: 'SELECT * FROM demo_events ORDER BY event_timestamp DESC LIMIT 10\nWITH late_materialization_max_rows = 0',
+    optimized: false,
+    badge: '🔴 RUN FIRST',
+    badgeColor: 'red',
+  },
+  {
     id: 'events-top-10-optimized',
-    title: '✅ OPTIMIZED: Events Top 10',
-    description: 'Wide table with 41 columns - late materialization automatically applies',
-    useCase: 'PROOF: This query demonstrates maximum benefit - many columns, small LIMIT. Compare with the "DISABLED" version to see the difference.',
+    title: '🟢 STEP 2: OPTIMIZED - RUN THIS SECOND!',
+    description: 'Same query WITH late materialization enabled',
+    useCase: '✅ Run this AFTER the DISABLED query to see the 4-10x speedup. This demonstrates the automatic optimization for LIMIT ≤ 10.',
     sql: 'SELECT * FROM demo_events ORDER BY event_timestamp DESC LIMIT 10',
     optimized: true,
-    badge: 'Automatic (LIMIT ≤ 10)',
+    badge: '🟢 RUN SECOND',
     badgeColor: 'green',
     expectedMetrics: {
       beforeTime: 'Baseline',
@@ -16,16 +26,6 @@ export const prebuiltQueries: PrebuiltQuery[] = [
       beforeData: 'Full scan',
       afterData: 'Pruned',
     },
-  },
-  {
-    id: 'events-top-10-disabled',
-    title: '❌ DISABLED: Events Top 10',
-    description: 'Same query but with late materialization explicitly disabled',
-    useCase: 'BASELINE: Run this FIRST to establish baseline performance. Then run the optimized version to see the improvement.',
-    sql: 'SELECT * FROM demo_events ORDER BY event_timestamp DESC LIMIT 10\nWITH late_materialization_max_rows = 0',
-    optimized: false,
-    badge: 'Disabled for comparison',
-    badgeColor: 'gray',
   },
   {
     id: 'explain-optimized',

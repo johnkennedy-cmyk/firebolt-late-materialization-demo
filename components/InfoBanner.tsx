@@ -32,6 +32,14 @@ export default function InfoBanner() {
             <p>
               <strong>For larger limits:</strong> Use <code className="bg-blue-100 px-1 rounded">WITH late_materialization_max_rows = 100</code>
             </p>
+            <div className="mt-3 p-3 bg-yellow-100 border border-yellow-400 rounded">
+              <p className="font-bold text-yellow-900 mb-1">⚠️ CACHE WARNING - Testing Order Matters!</p>
+              <p className="text-xs text-yellow-900">
+                Firebolt caches query results. If you run queries out of order or repeatedly, 
+                cached results will make ALL queries fast, hiding the optimization benefit. 
+                <strong className="text-yellow-950"> Always run DISABLED first (cold cache), then OPTIMIZED second.</strong>
+              </p>
+            </div>
           </div>
           <div className="mt-3 flex gap-4 text-sm">
             <a 

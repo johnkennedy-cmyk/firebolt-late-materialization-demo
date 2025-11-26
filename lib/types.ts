@@ -34,7 +34,7 @@ export interface PrebuiltQuery {
   sql: string;
   optimized: boolean;
   badge: string;
-  badgeColor: 'green' | 'gray' | 'blue';
+  badgeColor: 'green' | 'gray' | 'blue' | 'red';
   expectedMetrics?: {
     beforeTime: string;
     afterTime: string;
