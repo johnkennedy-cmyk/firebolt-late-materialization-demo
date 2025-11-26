@@ -97,10 +97,10 @@ export default function ConnectionForm({ onConnectionChange }: ConnectionFormPro
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-      <div className="flex items-center gap-2 mb-4">
-        <Database className="text-firebolt-orange" size={24} />
-        <h2 className="text-xl font-semibold">Connect to Firebolt Cloud</h2>
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 mb-6">
+      <div className="flex items-center gap-3 mb-6">
+        <Database className="text-firebolt-red" size={28} />
+        <h2 className="text-2xl font-bold text-gray-900">Connect to Firebolt Cloud</h2>
       </div>
 
       {status.connected ? (
@@ -135,7 +135,7 @@ export default function ConnectionForm({ onConnectionChange }: ConnectionFormPro
                 value={credentials.accountName}
                 onChange={(e) => handleChange('accountName', e.target.value)}
                 placeholder="your_account"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-firebolt-orange"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-firebolt-red focus:border-transparent transition-all"
               />
             </div>
 
@@ -148,7 +148,7 @@ export default function ConnectionForm({ onConnectionChange }: ConnectionFormPro
                 value={credentials.database}
                 onChange={(e) => handleChange('database', e.target.value)}
                 placeholder="your_database"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-firebolt-orange"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-firebolt-red focus:border-transparent transition-all"
               />
             </div>
 
@@ -161,7 +161,7 @@ export default function ConnectionForm({ onConnectionChange }: ConnectionFormPro
                 value={credentials.engine}
                 onChange={(e) => handleChange('engine', e.target.value)}
                 placeholder="your_engine"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-firebolt-orange"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-firebolt-red focus:border-transparent transition-all"
               />
             </div>
 
@@ -174,7 +174,7 @@ export default function ConnectionForm({ onConnectionChange }: ConnectionFormPro
                 value={credentials.clientId}
                 onChange={(e) => handleChange('clientId', e.target.value)}
                 placeholder="your_client_id"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-firebolt-orange"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-firebolt-red focus:border-transparent transition-all"
               />
             </div>
 
@@ -187,7 +187,7 @@ export default function ConnectionForm({ onConnectionChange }: ConnectionFormPro
                 value={credentials.clientSecret}
                 onChange={(e) => handleChange('clientSecret', e.target.value)}
                 placeholder="your_client_secret"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-firebolt-orange"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-firebolt-red focus:border-transparent transition-all"
               />
             </div>
           </div>
@@ -202,7 +202,7 @@ export default function ConnectionForm({ onConnectionChange }: ConnectionFormPro
           <button
             onClick={handleTestConnection}
             disabled={testing || !credentials.accountName || !credentials.database || !credentials.engine || !credentials.clientId || !credentials.clientSecret}
-            className="flex items-center gap-2 px-6 py-2 bg-firebolt-orange text-white rounded-md hover:bg-orange-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+            className="flex items-center justify-center gap-2 px-8 py-4 bg-firebolt-red text-white font-semibold rounded-full hover:bg-firebolt-redHover disabled:bg-gray-300 disabled:cursor-not-allowed transition-all duration-200 shadow-md hover:shadow-lg"
           >
             {testing ? (
               <>

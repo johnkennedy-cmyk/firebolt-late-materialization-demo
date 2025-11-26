@@ -114,69 +114,72 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen">
-      {/* Hero Section */}
-      <div className="bg-gradient-to-r from-firebolt-orange to-orange-600 text-white py-12 px-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center gap-3 mb-4">
-            <Zap size={40} />
-            <h1 className="text-4xl font-bold">
-              Experience Firebolt&apos;s Late Materialization
-            </h1>
+    <main className="min-h-screen bg-firebolt-lightGray">
+      {/* Hero Section - Firebolt Style */}
+      <div className="bg-white border-b border-gray-200 py-16 px-4">
+        <div className="max-w-7xl mx-auto text-center">
+          <div className="flex items-center justify-center gap-3 mb-6">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="12" fill="#EF2F4B"/>
+              <path d="M8 8h8v8H8z" fill="white"/>
+            </svg>
           </div>
-          <p className="text-xl text-orange-100 mb-4">
+          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+            Experience Firebolt&apos;s<br />Late Materialization
+          </h1>
+          <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
             30x faster top-K queries. Automatic. No configuration.
           </p>
           <a
             href="https://www.firebolt.io/blog/pruning-even-more-data-with-late-materialization"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-white hover:text-orange-100 underline"
+            className="inline-flex items-center gap-2 bg-firebolt-red hover:bg-firebolt-redHover text-white font-semibold px-8 py-4 rounded-full transition-colors duration-200"
           >
             Read the full blog post
-            <ExternalLink size={16} />
+            <ExternalLink size={18} />
           </a>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-4 py-12">
         {/* Three-Step Flow */}
-        <div className="mb-8 bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-2xl font-bold mb-4">How It Works</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="flex items-start gap-3">
-              <div className="flex-shrink-0 w-8 h-8 bg-firebolt-orange text-white rounded-full flex items-center justify-center font-bold">
-                1
+        <div className="mb-12 bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
+          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">How It Works</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="text-center">
+              <div className="flex justify-center mb-4">
+                <div className="flex-shrink-0 w-12 h-12 bg-firebolt-red text-white rounded-full flex items-center justify-center font-bold text-lg">
+                  1
+                </div>
               </div>
-              <div>
-                <h3 className="font-semibold mb-1">Connect to Firebolt Cloud</h3>
-                <p className="text-sm text-gray-600">
-                  Enter your database credentials to get started
-                </p>
-              </div>
+              <h3 className="font-bold text-lg mb-2 text-gray-900">Connect to Firebolt Cloud</h3>
+              <p className="text-sm text-gray-600">
+                Enter your database credentials to get started
+              </p>
             </div>
-            <div className="flex items-start gap-3">
-              <div className="flex-shrink-0 w-8 h-8 bg-firebolt-orange text-white rounded-full flex items-center justify-center font-bold">
-                2
+            <div className="text-center">
+              <div className="flex justify-center mb-4">
+                <div className="flex-shrink-0 w-12 h-12 bg-firebolt-red text-white rounded-full flex items-center justify-center font-bold text-lg">
+                  2
+                </div>
               </div>
-              <div>
-                <h3 className="font-semibold mb-1">Run Example Queries</h3>
-                <p className="text-sm text-gray-600">
-                  Try pre-built examples or write your own SQL
-                </p>
-              </div>
+              <h3 className="font-bold text-lg mb-2 text-gray-900">Run Example Queries</h3>
+              <p className="text-sm text-gray-600">
+                Try pre-built examples or write your own SQL
+              </p>
             </div>
-            <div className="flex items-start gap-3">
-              <div className="flex-shrink-0 w-8 h-8 bg-firebolt-orange text-white rounded-full flex items-center justify-center font-bold">
-                3
+            <div className="text-center">
+              <div className="flex justify-center mb-4">
+                <div className="flex-shrink-0 w-12 h-12 bg-firebolt-red text-white rounded-full flex items-center justify-center font-bold text-lg">
+                  3
+                </div>
               </div>
-              <div>
-                <h3 className="font-semibold mb-1">See Performance Improvements</h3>
-                <p className="text-sm text-gray-600">
-                  Watch real-time metrics and optimizations
-                </p>
-              </div>
+              <h3 className="font-bold text-lg mb-2 text-gray-900">See Performance Improvements</h3>
+              <p className="text-sm text-gray-600">
+                Watch real-time metrics and optimizations
+              </p>
             </div>
           </div>
         </div>
@@ -190,29 +193,29 @@ export default function Home() {
         {/* Tabbed Interface */}
         {connectionStatus.connected && (
           <div className="mb-6">
-            <div className="border-b border-gray-200 mb-6">
-              <nav className="flex gap-4">
+            <div className="mb-6">
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-2 inline-flex">
                 <button
                   onClick={() => setActiveTab('prebuilt')}
-                  className={`py-3 px-4 font-medium border-b-2 transition-colors ${
+                  className={`px-6 py-3 font-semibold rounded-xl transition-all duration-200 ${
                     activeTab === 'prebuilt'
-                      ? 'border-firebolt-orange text-firebolt-orange'
-                      : 'border-transparent text-gray-500 hover:text-gray-700'
+                      ? 'bg-firebolt-red text-white shadow-md'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                   }`}
                 >
                   Pre-built Examples
                 </button>
                 <button
                   onClick={() => setActiveTab('editor')}
-                  className={`py-3 px-4 font-medium border-b-2 transition-colors ${
+                  className={`px-6 py-3 font-semibold rounded-xl transition-all duration-200 ${
                     activeTab === 'editor'
-                      ? 'border-firebolt-orange text-firebolt-orange'
-                      : 'border-transparent text-gray-500 hover:text-gray-700'
+                      ? 'bg-firebolt-red text-white shadow-md'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                   }`}
                 >
                   Query Editor
                 </button>
-              </nav>
+              </div>
             </div>
 
             {/* Tab Content */}
@@ -256,7 +259,7 @@ export default function Home() {
               rel="noopener noreferrer"
               className="block p-4 bg-white rounded-lg hover:shadow-md transition-shadow"
             >
-              <h3 className="font-semibold text-firebolt-orange mb-2">
+              <h3 className="font-semibold text-firebolt-red mb-2">
                 Engineering Blog →
               </h3>
               <p className="text-sm text-gray-600">
@@ -269,7 +272,7 @@ export default function Home() {
               rel="noopener noreferrer"
               className="block p-4 bg-white rounded-lg hover:shadow-md transition-shadow"
             >
-              <h3 className="font-semibold text-firebolt-orange mb-2">
+              <h3 className="font-semibold text-firebolt-red mb-2">
                 Documentation →
               </h3>
               <p className="text-sm text-gray-600">
@@ -282,7 +285,7 @@ export default function Home() {
               rel="noopener noreferrer"
               className="block p-4 bg-white rounded-lg hover:shadow-md transition-shadow"
             >
-              <h3 className="font-semibold text-firebolt-orange mb-2">
+              <h3 className="font-semibold text-firebolt-red mb-2">
                 Try Firebolt →
               </h3>
               <p className="text-sm text-gray-600">

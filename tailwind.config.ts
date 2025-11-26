@@ -10,10 +10,16 @@ const config: Config = {
     extend: {
       colors: {
         firebolt: {
-          orange: "#FF6A13",
+          red: "#EF2F4B", // Primary Firebolt red
+          redHover: "#D91A3A", // Darker red for hover states
+          orange: "#FF6A13", // Legacy orange (keeping for backwards compatibility)
           blue: "#1E3A8A",
           gray: "#64748B",
+          lightGray: "#F8F8F8", // Background color matching firebolt.io
         },
+      },
+      fontFamily: {
+        sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
       },
     },
   },
