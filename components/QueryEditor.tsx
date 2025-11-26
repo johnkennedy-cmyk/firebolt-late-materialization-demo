@@ -75,7 +75,7 @@ export default function QueryEditor({ onRunQuery, isConnected, isRunning, queryH
           <button
             onClick={handleRunQuery}
             disabled={!isConnected || isRunning || !query.trim()}
-            className="flex items-center justify-center gap-2 px-8 py-4 bg-firebolt-red text-white font-semibold rounded-full hover:bg-firebolt-redHover disabled:bg-gray-300 disabled:cursor-not-allowed transition-all duration-200 shadow-md hover:shadow-lg"
+            className="flex items-center justify-center gap-2 px-8 py-4 bg-[#EF2F4B] text-white font-semibold rounded-full hover:bg-[#D91A3A] disabled:bg-gray-300 disabled:cursor-not-allowed transition-all duration-200 shadow-md hover:shadow-lg"
           >
             <Play size={18} />
             {isRunning ? 'Executing...' : 'Execute Query'}

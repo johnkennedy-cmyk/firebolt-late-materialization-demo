@@ -134,7 +134,7 @@ export default function Home() {
             href="https://www.firebolt.io/blog/pruning-even-more-data-with-late-materialization"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 bg-firebolt-red hover:bg-firebolt-redHover text-white font-semibold px-8 py-4 rounded-full transition-colors duration-200"
+            className="inline-flex items-center gap-2 bg-[#EF2F4B] hover:bg-[#D91A3A] text-white font-semibold px-8 py-4 rounded-full transition-colors duration-200"
           >
             Read the full blog post
             <ExternalLink size={18} />
@@ -199,7 +199,7 @@ export default function Home() {
                   onClick={() => setActiveTab('prebuilt')}
                   className={`px-6 py-3 font-semibold rounded-xl transition-all duration-200 ${
                     activeTab === 'prebuilt'
-                      ? 'bg-firebolt-red text-white shadow-md'
+                      ? 'bg-[#EF2F4B] text-white shadow-md hover:bg-[#D91A3A]'
                       : 'text-gray-900 hover:text-gray-900 hover:bg-gray-100'
                   }`}
                 >
@@ -209,7 +209,7 @@ export default function Home() {
                   onClick={() => setActiveTab('editor')}
                   className={`px-6 py-3 font-semibold rounded-xl transition-all duration-200 ${
                     activeTab === 'editor'
-                      ? 'bg-firebolt-red text-white shadow-md'
+                      ? 'bg-[#EF2F4B] text-white shadow-md hover:bg-[#D91A3A]'
                       : 'text-gray-900 hover:text-gray-900 hover:bg-gray-100'
                   }`}
                 >
@@ -259,7 +259,7 @@ export default function Home() {
               rel="noopener noreferrer"
               className="block p-4 bg-white rounded-lg hover:shadow-md transition-shadow"
             >
-              <h3 className="font-semibold text-firebolt-red mb-2">
+              <h3 className="font-semibold text-[#EF2F4B] mb-2">
                 Engineering Blog →
               </h3>
               <p className="text-sm text-gray-600">
@@ -272,7 +272,7 @@ export default function Home() {
               rel="noopener noreferrer"
               className="block p-4 bg-white rounded-lg hover:shadow-md transition-shadow"
             >
-              <h3 className="font-semibold text-firebolt-red mb-2">
+              <h3 className="font-semibold text-[#EF2F4B] mb-2">
                 Documentation →
               </h3>
               <p className="text-sm text-gray-600">
@@ -285,7 +285,7 @@ export default function Home() {
               rel="noopener noreferrer"
               className="block p-4 bg-white rounded-lg hover:shadow-md transition-shadow"
             >
-              <h3 className="font-semibold text-firebolt-red mb-2">
+              <h3 className="font-semibold text-[#EF2F4B] mb-2">
                 Try Firebolt →
               </h3>
               <p className="text-sm text-gray-600">

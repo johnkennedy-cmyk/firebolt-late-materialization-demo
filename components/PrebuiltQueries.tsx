@@ -95,7 +95,7 @@ export default function PrebuiltQueries({ onRunQuery, isConnected, isRunning }: 
           className={`border rounded-lg p-4 transition-all ${
             query.id === 'events-top-10-disabled' ? 'border-4 border-red-500 bg-red-50 shadow-2xl' :
             query.id === 'events-top-10-optimized' ? 'border-4 border-green-500 bg-green-50 shadow-2xl' :
-            selectedQuery === query.id ? 'border-firebolt-red shadow-md' : 'border-gray-200 hover:border-gray-300'
+            selectedQuery === query.id ? 'border-[#EF2F4B] shadow-md' : 'border-gray-200 hover:border-gray-300'
           }`}
         >
           <div className="flex items-start justify-between mb-2">
@@ -140,7 +140,7 @@ export default function PrebuiltQueries({ onRunQuery, isConnected, isRunning }: 
           <button
             onClick={() => handleRunQuery(query)}
             disabled={!isConnected || isRunning}
-            className="flex items-center justify-center gap-2 px-6 py-3 bg-firebolt-red text-white font-semibold rounded-full hover:bg-firebolt-redHover disabled:bg-gray-300 disabled:cursor-not-allowed transition-all duration-200 shadow-md hover:shadow-lg"
+            className="flex items-center justify-center gap-2 px-6 py-3 bg-[#EF2F4B] text-white font-semibold rounded-full hover:bg-[#D91A3A] disabled:bg-gray-300 disabled:cursor-not-allowed transition-all duration-200 shadow-md hover:shadow-lg"
           >
             <Play size={16} />
             {isRunning && selectedQuery === query.id ? 'Running...' : 'Run Query'}

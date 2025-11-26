@@ -90,7 +90,7 @@ export default function ResultsDisplay({ result, error }: ResultsDisplayProps) {
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-gradient-to-br from-orange-50 to-amber-50 rounded-lg border border-orange-200">
           <div className="flex items-start gap-2">
-            <Clock className="text-firebolt-red mt-1" size={20} />
+            <Clock className="text-[#EF2F4B] mt-1" size={20} />
             <div>
               <p className="text-xs text-gray-600 font-medium">Execution Time</p>
               <p className="text-2xl font-bold text-gray-900">
@@ -105,7 +105,7 @@ export default function ResultsDisplay({ result, error }: ResultsDisplayProps) {
           </div>
 
           <div className="flex items-start gap-2">
-            <Database className="text-firebolt-red mt-1" size={20} />
+            <Database className="text-[#EF2F4B] mt-1" size={20} />
             <div>
               <p className="text-xs text-gray-600 font-medium">Data Scanned</p>
               <p className="text-2xl font-bold text-gray-900">
@@ -118,7 +118,7 @@ export default function ResultsDisplay({ result, error }: ResultsDisplayProps) {
           </div>
 
           <div className="flex items-start gap-2">
-            <Hash className="text-firebolt-red mt-1" size={20} />
+            <Hash className="text-[#EF2F4B] mt-1" size={20} />
             <div>
               <p className="text-xs text-gray-600 font-medium">Rows Returned</p>
               <p className="text-2xl font-bold text-gray-900">
@@ -245,7 +245,7 @@ export default function ResultsDisplay({ result, error }: ResultsDisplayProps) {
         <div className="mt-4 text-center">
           <button
             onClick={() => setShowRows(prev => prev + 100)}
-            className="px-4 py-2 text-sm text-firebolt-red hover:text-orange-700 underline"
+            className="px-4 py-2 text-sm text-[#EF2F4B] hover:text-orange-700 underline"
           >
             Show more rows ({result.rows.length - showRows} remaining)
           </button>
