@@ -67,25 +67,42 @@ export default function ResultsDisplay({ result, error }: ResultsDisplayProps) {
     <div className="bg-white rounded-lg shadow-md p-6">
       {/* Performance Metrics Header */}
       <div className="mb-6">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
           <h3 className="text-lg font-semibold">Query Results</h3>
-          <span className={`inline-flex items-center gap-1 px-3 py-1 rounded text-sm font-medium ${
-            result.optimized 
-              ? 'bg-green-100 text-green-800 border border-green-300' 
-              : 'bg-gray-100 text-gray-800 border border-gray-300'
-          }`}>
-            {result.optimized ? (
-              <>
-                <CheckCircle size={14} />
-                Late Materialization Applied
-              </>
-            ) : (
-              <>
-                <XCircle size={14} />
-                Not Optimized
-              </>
-            )}
-          </span>
+          <div className="flex items-center gap-2">
+            <span className={`inline-flex items-center gap-1 px-3 py-1 rounded text-sm font-medium ${
+              result.optimized 
+                ? 'bg-green-100 text-green-800 border border-green-300' 
+                : 'bg-gray-100 text-gray-800 border border-gray-300'
+            }`}>
+              {result.optimized ? (
+                <>
+                  <CheckCircle size={14} />
+                  Late Materialization Applied
+                </>
+              ) : (
+                <>
+                  <XCircle size={14} />
+                  Not Optimized
+                </>
+              )}
+            </span>
+            <span className={`inline-flex items-center gap-1 px-3 py-1 rounded text-sm font-bold ${
+              result.cacheDisabled 
+                ? 'bg-purple-100 text-purple-900 border-2 border-purple-500' 
+                : 'bg-blue-100 text-blue-800 border border-blue-300'
+            }`}>
+              {result.cacheDisabled ? (
+                <>
+                  🚫 Cache Disabled
+                </>
+              ) : (
+                <>
+                  💾 Cache Enabled
+                </>
+              )}
+            </span>
+          </div>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-gradient-to-br from-orange-50 to-amber-50 rounded-lg border border-orange-200">
@@ -138,8 +155,8 @@ export default function ResultsDisplay({ result, error }: ResultsDisplayProps) {
           </div>
         </div>
 
-        {/* CACHE WARNING when data scanned is 0 */}
-        {result.dataScanned === 0 && (
+        {/* CACHE WARNING when data scanned is 0 AND cache was NOT explicitly disabled */}
+        {result.dataScanned === 0 && !result.cacheDisabled && (
           <div className="mt-4 p-4 bg-gradient-to-r from-yellow-50 to-orange-50 border-4 border-yellow-500 rounded-lg animate-pulse">
             <div className="flex items-center gap-3">
               <div className="text-4xl">⚠️</div>
@@ -152,7 +169,25 @@ export default function ResultsDisplay({ result, error }: ResultsDisplayProps) {
                   Cached queries are ALWAYS fast regardless of optimization.
                 </p>
                 <p className="text-xs text-yellow-800 mt-2">
-                  🔄 <strong>For accurate comparison:</strong> Wait 5-10 minutes for cache to expire, then run <strong>DISABLED first</strong> → <strong>OPTIMIZED second</strong>
+                  💡 <strong>Tip:</strong> Use the <strong>🔴 STEP 1</strong> and <strong>🟢 STEP 2</strong> queries above - they have cache disabled for accurate comparison!
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* CACHE DISABLED confirmation */}
+        {result.cacheDisabled && (
+          <div className="mt-4 p-4 bg-gradient-to-r from-purple-50 to-indigo-50 border-3 border-purple-500 rounded-lg">
+            <div className="flex items-center gap-3">
+              <div className="text-3xl">✅</div>
+              <div>
+                <p className="font-bold text-purple-900 text-base">
+                  Cache Disabled - Accurate Performance Measurement
+                </p>
+                <p className="text-sm text-purple-800">
+                  This query used <code className="bg-purple-100 px-2 py-0.5 rounded font-mono text-xs">enable_subresult_cache = false</code> to ensure you see real query performance, not cached results.
+                  Data scanned: <strong>{formatBytes(result.dataScanned)}</strong>
                 </p>
               </div>
             </div>

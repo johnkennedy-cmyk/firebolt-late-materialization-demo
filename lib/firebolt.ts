@@ -61,6 +61,10 @@ export class FireboltClient {
       // Determine if query was optimized (has ORDER BY and LIMIT <= 10)
       const optimized = this.isQueryOptimized(query);
 
+      // Determine if cache was explicitly disabled
+      const cacheDisabled = query.toUpperCase().includes('ENABLE_SUBRESULT_CACHE = FALSE') || 
+                            query.toUpperCase().includes('ENABLE_SUBRESULT_CACHE=FALSE');
+
       // Fetch actual query statistics from Firebolt using query text match
       let actualDuration = clientExecutionTime;
       let actualDataScanned = 0;
@@ -92,6 +96,7 @@ export class FireboltClient {
         query,
         timestamp: Date.now(),
         optimized,
+        cacheDisabled,
       };
     } catch (error: any) {
       console.error('Query execution failed:', error);

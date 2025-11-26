@@ -68,6 +68,7 @@ export default function Home() {
           dataScanned: data.result.dataScanned,
           rowCount: data.result.rowCount,
           optimized: data.result.optimized,
+          cacheDisabled: data.result.cacheDisabled,
         };
         setQueryHistory(prev => [...prev, historyItem]);
       } else {

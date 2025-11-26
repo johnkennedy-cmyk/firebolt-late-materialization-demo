@@ -46,9 +46,14 @@ export default function PrebuiltQueries({ onRunQuery, isConnected, isRunning }: 
             <h3 className="text-2xl font-bold text-red-900 mb-3">
               🎯 CRITICAL: Follow This Order for Accurate Results!
             </h3>
-            <p className="text-base text-red-800 mb-4 font-bold bg-red-100 p-2 rounded border-2 border-red-400">
-              ⚡ Running queries out of order will show cached results and hide the performance difference!
-            </p>
+            <div className="mb-4 p-3 bg-purple-100 border-2 border-purple-500 rounded-lg">
+              <p className="text-sm text-purple-900 font-bold mb-1">
+                ✅ Cache Control: <code className="bg-purple-200 px-2 py-1 rounded font-mono text-xs">enable_subresult_cache = false</code>
+              </p>
+              <p className="text-xs text-purple-800">
+                Both STEP 1 and STEP 2 queries now include this flag to disable caching, ensuring you see TRUE performance (not cached results)!
+              </p>
+            </div>
             <div className="grid md:grid-cols-2 gap-4 mb-4">
               <div className="bg-red-50 p-4 rounded-lg border-4 border-red-500 shadow-lg">
                 <div className="flex items-center gap-2 mb-2">

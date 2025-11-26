@@ -17,6 +17,7 @@ export interface QueryResult {
   query: string;
   timestamp: number;
   optimized: boolean;
+  cacheDisabled: boolean; // Whether enable_subresult_cache=false was used
 }
 
 export interface QueryMetrics {
@@ -51,6 +52,7 @@ export interface QueryHistoryItem {
   dataScanned: number;
   rowCount: number;
   optimized: boolean;
+  cacheDisabled?: boolean;
   error?: string;
 }
 
