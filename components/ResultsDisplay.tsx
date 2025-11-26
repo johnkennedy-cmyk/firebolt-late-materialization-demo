@@ -92,12 +92,14 @@ export default function ResultsDisplay({ result, error }: ResultsDisplayProps) {
           <div className="flex items-start gap-2">
             <Clock className="text-firebolt-orange mt-1" size={20} />
             <div>
-              <p className="text-xs text-gray-600">Execution Time</p>
-              <p className="text-lg font-bold text-gray-900">
-                {result.executionTime.toFixed(3)}s
+              <p className="text-xs text-gray-600 font-medium">Execution Time</p>
+              <p className="text-2xl font-bold text-gray-900">
+                {result.executionTime < 1 
+                  ? `${(result.executionTime * 1000).toFixed(0)}ms`
+                  : `${result.executionTime.toFixed(2)}s`}
               </p>
               {result.executionTime < 1 && (
-                <p className="text-xs text-green-600">⚡ Lightning fast!</p>
+                <p className="text-xs text-green-700 font-semibold">⚡ Sub-second!</p>
               )}
             </div>
           </div>
@@ -105,12 +107,12 @@ export default function ResultsDisplay({ result, error }: ResultsDisplayProps) {
           <div className="flex items-start gap-2">
             <Database className="text-firebolt-orange mt-1" size={20} />
             <div>
-              <p className="text-xs text-gray-600">Data Scanned</p>
-              <p className="text-lg font-bold text-gray-900">
+              <p className="text-xs text-gray-600 font-medium">Data Scanned</p>
+              <p className="text-2xl font-bold text-gray-900">
                 {formatBytes(result.dataScanned)}
               </p>
-              {result.optimized && (
-                <p className="text-xs text-green-600">✓ Optimized</p>
+              {result.optimized && result.dataScanned < 100 * 1024 && (
+                <p className="text-xs text-green-700 font-semibold">✓ Minimal!</p>
               )}
             </div>
           </div>
@@ -118,8 +120,8 @@ export default function ResultsDisplay({ result, error }: ResultsDisplayProps) {
           <div className="flex items-start gap-2">
             <Hash className="text-firebolt-orange mt-1" size={20} />
             <div>
-              <p className="text-xs text-gray-600">Rows Returned</p>
-              <p className="text-lg font-bold text-gray-900">
+              <p className="text-xs text-gray-600 font-medium">Rows Returned</p>
+              <p className="text-2xl font-bold text-gray-900">
                 {result.rowCount.toLocaleString()}
               </p>
             </div>
@@ -135,6 +137,47 @@ export default function ResultsDisplay({ result, error }: ResultsDisplayProps) {
             </button>
           </div>
         </div>
+
+        {/* Prominent optimization callout */}
+        {result.optimized && result.executionTime < 1 && (
+          <div className="mt-4 p-4 bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-400 rounded-lg">
+            <div className="flex items-center gap-3">
+              <div className="text-4xl">🚀</div>
+              <div>
+                <p className="font-bold text-green-900 text-lg">
+                  Late Materialization Applied!
+                </p>
+                <p className="text-sm text-green-800">
+                  Query executed in <strong>{(result.executionTime * 1000).toFixed(0)}ms</strong> scanning only <strong>{formatBytes(result.dataScanned)}</strong>.
+                  {result.rowCount <= 10 && ' Automatic optimization for LIMIT ≤ 10.'}
+                </p>
+              </div>
+            </div>
+            <p className="text-xs text-green-700 mt-2 italic">
+              💡 Tip: Run the "DISABLED" version of this query to see the baseline performance and calculate the exact speedup!
+            </p>
+          </div>
+        )}
+
+        {!result.optimized && result.executionTime > 0.5 && (
+          <div className="mt-4 p-4 bg-gradient-to-r from-red-50 to-orange-50 border-2 border-red-400 rounded-lg">
+            <div className="flex items-center gap-3">
+              <div className="text-4xl">🐌</div>
+              <div>
+                <p className="font-bold text-red-900 text-lg">
+                  Baseline Performance (Optimization Disabled)
+                </p>
+                <p className="text-sm text-red-800">
+                  Query took <strong>{result.executionTime.toFixed(2)}s</strong> scanning <strong>{formatBytes(result.dataScanned)}</strong>.
+                  This represents the performance WITHOUT late materialization.
+                </p>
+              </div>
+            </div>
+            <p className="text-xs text-red-700 mt-2 italic">
+              💡 Tip: Now run the "OPTIMIZED" version to see the dramatic improvement!
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Results Table */}

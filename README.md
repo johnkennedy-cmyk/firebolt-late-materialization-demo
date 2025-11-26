@@ -110,7 +110,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 ### Sample Data Setup
 
 For the best demonstration of late materialization, you need a table with:
-- **Many rows** (ideally 10M+, but works with any size)
+- **Many rows** (2M+ recommended, included in setup scripts)
 - **Many columns** (20+)
 - **Large text fields** or JSON columns (maximizes the benefit)
 
@@ -361,7 +361,7 @@ ORDER BY start_time DESC LIMIT 4;
 
 If queries are slower than expected:
 
-- Check your table has sufficient data (ideally 10M+ rows)
+- Check your table has sufficient data (2M+ rows recommended, scripts default to 3M)
 - Ensure table has many columns (20+)
 - Verify `LIMIT ≤ 10` or `late_materialization_max_rows` is set
 - Check engine size (larger engines = faster queries)

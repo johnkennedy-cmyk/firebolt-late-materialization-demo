@@ -1,11 +1,11 @@
 // Type definitions for the Firebolt Late Materialization Demo
 
 export interface FireboltCredentials {
+  accountName: string;
   database: string;
   engine: string;
   clientId: string;
   clientSecret: string;
-  account?: string;
 }
 
 export interface QueryResult {

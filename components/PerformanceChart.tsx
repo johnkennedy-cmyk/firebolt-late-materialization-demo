@@ -24,17 +24,54 @@ export default function PerformanceChart({ queryHistory, onClearHistory }: Perfo
   // Prepare data for charts - take last 10 queries
   const recentQueries = queryHistory.slice(-10).filter(q => !q.error);
   
-  const executionTimeData = recentQueries.map((item, index) => ({
-    name: `Query ${queryHistory.length - 9 + index}`,
-    time: parseFloat(item.executionTime.toFixed(3)),
-    fill: item.optimized ? '#22c55e' : '#94a3b8',
-  }));
+  const executionTimeData = recentQueries.map((item, index) => {
+    // Find if there's a comparison query (optimized vs non-optimized)
+    const isOptimized = item.optimized;
+    const comparisonQuery = recentQueries.find((q, idx) => 
+      idx !== index && q.optimized !== isOptimized && 
+      Math.abs(q.rowCount - item.rowCount) < 5 // Similar row counts
+    );
+    
+    let speedup = '';
+    if (comparisonQuery && !isOptimized && comparisonQuery.optimized) {
+      const multiplier = (item.executionTime / comparisonQuery.executionTime).toFixed(1);
+      speedup = ` (${multiplier}x slower)`;
+    } else if (comparisonQuery && isOptimized && !comparisonQuery.optimized) {
+      const multiplier = (comparisonQuery.executionTime / item.executionTime).toFixed(1);
+      speedup = ` (${multiplier}x faster!)`;
+    }
+    
+    return {
+      name: `Query ${queryHistory.length - recentQueries.length + index + 1}${speedup}`,
+      time: parseFloat(item.executionTime.toFixed(3)),
+      fill: item.optimized ? '#22c55e' : '#ef4444',
+      optimized: item.optimized,
+    };
+  });
 
-  const dataScannedData = recentQueries.map((item, index) => ({
-    name: `Query ${queryHistory.length - 9 + index}`,
-    data: parseFloat((item.dataScanned / (1024 * 1024)).toFixed(2)),
-    fill: item.optimized ? '#22c55e' : '#94a3b8',
-  }));
+  const dataScannedData = recentQueries.map((item, index) => {
+    const isOptimized = item.optimized;
+    const comparisonQuery = recentQueries.find((q, idx) => 
+      idx !== index && q.optimized !== isOptimized && 
+      Math.abs(q.rowCount - item.rowCount) < 5
+    );
+    
+    let savings = '';
+    if (comparisonQuery && !isOptimized && comparisonQuery.optimized) {
+      const multiplier = (item.dataScanned / comparisonQuery.dataScanned).toFixed(1);
+      savings = ` (${multiplier}x more data)`;
+    } else if (comparisonQuery && isOptimized && !comparisonQuery.optimized) {
+      const pct = (100 - (item.dataScanned / comparisonQuery.dataScanned * 100)).toFixed(0);
+      savings = ` (${pct}% less!)`;
+    }
+    
+    return {
+      name: `Query ${queryHistory.length - recentQueries.length + index + 1}${savings}`,
+      data: parseFloat((item.dataScanned / (1024 * 1024)).toFixed(2)),
+      fill: item.optimized ? '#22c55e' : '#ef4444',
+      optimized: item.optimized,
+    };
+  });
 
   const totalQueries = queryHistory.length;
   const optimizedQueries = queryHistory.filter(q => q.optimized).length;
@@ -86,46 +123,73 @@ export default function PerformanceChart({ queryHistory, onClearHistory }: Perfo
 
       {/* Execution Time Chart */}
       <div className="mb-6">
-        <h4 className="text-sm font-semibold text-gray-700 mb-3">Execution Time Comparison</h4>
-        <ResponsiveContainer width="100%" height={200}>
-          <BarChart data={executionTimeData}>
+        <h4 className="text-sm font-semibold text-gray-700 mb-3">⚡ Execution Time Comparison</h4>
+        <ResponsiveContainer width="100%" height={250}>
+          <BarChart data={executionTimeData} layout="horizontal">
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-            <YAxis tick={{ fontSize: 12 }} label={{ value: 'Seconds', angle: -90, position: 'insideLeft', fontSize: 12 }} />
+            <XAxis 
+              dataKey="name" 
+              tick={{ fontSize: 11 }} 
+              angle={-15}
+              textAnchor="end"
+              height={80}
+            />
+            <YAxis 
+              tick={{ fontSize: 12 }} 
+              label={{ value: 'Seconds', angle: -90, position: 'insideLeft', fontSize: 12 }}
+            />
             <Tooltip 
-              formatter={(value: number) => [`${value}s`, 'Execution Time']}
-              contentStyle={{ fontSize: 12 }}
+              formatter={(value: number, name: string, props: any) => [
+                `${value}s${props.payload.optimized ? ' ⚡ OPTIMIZED' : ' 🐌 BASELINE'}`, 
+                'Execution Time'
+              ]}
+              contentStyle={{ fontSize: 12, backgroundColor: 'rgba(255,255,255,0.95)', border: '2px solid #ddd' }}
             />
             <Bar dataKey="time" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
-        <div className="flex items-center justify-center gap-4 mt-2 text-xs">
+        <div className="flex items-center justify-center gap-6 mt-2 text-xs font-medium">
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-green-500 rounded"></div>
-            <span>Optimized</span>
+            <div className="w-4 h-4 bg-green-500 rounded"></div>
+            <span>✅ Optimized (Late Materialization)</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-gray-400 rounded"></div>
-            <span>Not Optimized</span>
+            <div className="w-4 h-4 bg-red-500 rounded"></div>
+            <span>❌ Baseline (Disabled)</span>
           </div>
         </div>
       </div>
 
       {/* Data Scanned Chart */}
       <div>
-        <h4 className="text-sm font-semibold text-gray-700 mb-3">Data Scanned Comparison</h4>
-        <ResponsiveContainer width="100%" height={200}>
-          <BarChart data={dataScannedData}>
+        <h4 className="text-sm font-semibold text-gray-700 mb-3">💾 Data Scanned Comparison</h4>
+        <ResponsiveContainer width="100%" height={250}>
+          <BarChart data={dataScannedData} layout="horizontal">
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-            <YAxis tick={{ fontSize: 12 }} label={{ value: 'MB', angle: -90, position: 'insideLeft', fontSize: 12 }} />
+            <XAxis 
+              dataKey="name" 
+              tick={{ fontSize: 11 }} 
+              angle={-15}
+              textAnchor="end"
+              height={80}
+            />
+            <YAxis 
+              tick={{ fontSize: 12 }} 
+              label={{ value: 'MB', angle: -90, position: 'insideLeft', fontSize: 12 }}
+            />
             <Tooltip 
-              formatter={(value: number) => [`${value} MB`, 'Data Scanned']}
-              contentStyle={{ fontSize: 12 }}
+              formatter={(value: number, name: string, props: any) => [
+                `${value} MB${props.payload.optimized ? ' ⚡ PRUNED' : ' 🐘 FULL SCAN'}`, 
+                'Data Scanned'
+              ]}
+              contentStyle={{ fontSize: 12, backgroundColor: 'rgba(255,255,255,0.95)', border: '2px solid #ddd' }}
             />
             <Bar dataKey="data" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
+        <p className="text-xs text-gray-600 text-center mt-3 italic">
+          💡 Lower is better! Optimized queries scan dramatically less data.
+        </p>
       </div>
     </div>
   );

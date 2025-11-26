@@ -5,10 +5,10 @@ import { FireboltCredentials } from '@/lib/types';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { database, engine, clientId, clientSecret, account } = body;
+    const { accountName, database, engine, clientId, clientSecret } = body;
 
     // Validate required fields
-    if (!database || !engine || !clientId || !clientSecret) {
+    if (!accountName || !database || !engine || !clientId || !clientSecret) {
       return NextResponse.json(
         { error: 'Missing required credentials' },
         { status: 400 }
@@ -16,11 +16,11 @@ export async function POST(request: NextRequest) {
     }
 
     const credentials: FireboltCredentials = {
+      accountName,
       database,
       engine,
       clientId,
       clientSecret,
-      account,
     };
 
     const result = await validateCredentials(credentials);

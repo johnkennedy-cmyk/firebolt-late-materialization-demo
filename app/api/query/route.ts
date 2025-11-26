@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { query, database, engine, clientId, clientSecret, account } = body;
+    const { query, accountName, database, engine, clientId, clientSecret } = body;
 
     // Validate required fields
     if (!query) {
@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!database || !engine || !clientId || !clientSecret) {
+    if (!accountName || !database || !engine || !clientId || !clientSecret) {
       return NextResponse.json(
         { error: 'Missing required credentials' },
         { status: 400 }
@@ -57,11 +57,11 @@ export async function POST(request: NextRequest) {
     }
 
     const credentials: FireboltCredentials = {
+      accountName,
       database,
       engine,
       clientId,
       clientSecret,
-      account,
     };
 
     const client = new FireboltClient(credentials);

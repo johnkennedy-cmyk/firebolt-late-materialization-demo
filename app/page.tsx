@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Zap, ExternalLink } from 'lucide-react';
 import ConnectionForm from '@/components/ConnectionForm';
 import InfoBanner from '@/components/InfoBanner';
@@ -18,11 +18,21 @@ export default function Home() {
   const [queryResult, setQueryResult] = useState<QueryResult | null>(null);
   const [queryError, setQueryError] = useState<string | null>(null);
   const [queryHistory, setQueryHistory] = useState<QueryHistoryItem[]>([]);
+  const resultsRef = useRef<HTMLDivElement>(null);
 
   const handleConnectionChange = (creds: FireboltCredentials | null, status: ConnectionStatus) => {
     setCredentials(creds);
     setConnectionStatus(status);
   };
+
+  // Auto-scroll to results when query completes
+  useEffect(() => {
+    if ((queryResult || queryError) && resultsRef.current) {
+      setTimeout(() => {
+        resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100); // Small delay to ensure DOM is updated
+    }
+  }, [queryResult, queryError]);
 
   const handleRunQuery = async (sql: string) => {
     if (!credentials || !connectionStatus.connected) {
@@ -224,7 +234,7 @@ export default function Home() {
             </div>
 
             {/* Results Display */}
-            <div className="mb-6">
+            <div ref={resultsRef} className="mb-6">
               <ResultsDisplay result={queryResult} error={queryError} />
             </div>
 

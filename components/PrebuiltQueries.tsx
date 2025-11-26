@@ -36,7 +36,35 @@ export default function PrebuiltQueries({ onRunQuery, isConnected, isRunning }: 
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
+      {/* Quick Comparison Callout */}
+      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-400 rounded-lg p-6">
+        <div className="flex items-start gap-4">
+          <div className="text-5xl">📊</div>
+          <div className="flex-1">
+            <h3 className="text-xl font-bold text-blue-900 mb-2">
+              🎯 Quick Performance Comparison
+            </h3>
+            <p className="text-sm text-blue-800 mb-3">
+              To see the dramatic performance difference, run these two queries in order:
+            </p>
+            <div className="grid md:grid-cols-2 gap-3">
+              <div className="bg-white p-3 rounded border-2 border-red-300">
+                <p className="text-sm font-bold text-red-900 mb-1">1️⃣ First: BASELINE (Disabled)</p>
+                <p className="text-xs text-gray-700">Run "❌ DISABLED: Events Top 10" to establish baseline performance</p>
+              </div>
+              <div className="bg-white p-3 rounded border-2 border-green-300">
+                <p className="text-sm font-bold text-green-900 mb-1">2️⃣ Then: OPTIMIZED (Enabled)</p>
+                <p className="text-xs text-gray-700">Run "✅ OPTIMIZED: Events Top 10" to see the 10-30x speedup!</p>
+              </div>
+            </div>
+            <p className="text-xs text-blue-700 mt-3 italic">
+              💡 The charts below will automatically show the speedup multiplier and data savings percentage!
+            </p>
+          </div>
+        </div>
+      </div>
+
       {prebuiltQueries.map((query) => (
         <div
           key={query.id}

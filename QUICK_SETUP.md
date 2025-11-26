@@ -18,7 +18,7 @@ python scripts/setup_demo_database.py
 
 This script will:
 1. ✅ Create a new database called `late_materialization_demo`
-2. ✅ Create two tables: `demo_events` (10,000 rows, 41 columns) and `api_logs` (1,000 rows, 12 columns)
+2. ✅ Create tables: `demo_events` (3M rows, 41 columns) and `api_logs` (1,000 rows, 12 columns)
 3. ✅ Load sample data optimized for late materialization demonstrations
 4. ✅ Verify the setup with a test query
 
@@ -37,7 +37,7 @@ STEP 3: Loading Sample Data
 
 STEP 4: Verifying Setup
 ✓ Found 2 tables:
-  - demo_events: 41 columns, 10,000 rows
+  - demo_events: 41 columns, 3,000,000 rows (~325 MB)
   - api_logs: 12 columns, 1,000 rows
 ✓ Testing late materialization query:
   - Query returned 10 rows in 0.123 seconds
@@ -81,7 +81,7 @@ Open http://localhost:3000 in your browser.
 
 ## Database Schema
 
-### demo_events (41 columns, 10,000 rows)
+### demo_events (41 columns, 3,000,000 rows)
 
 Wide table designed to maximize late materialization benefits:
 - **Core fields**: event_id, timestamp, user_id, session_id
