@@ -10,16 +10,27 @@ Usage:
 """
 
 import sys
+import os
 from firebolt.client.auth import ClientCredentials
 from firebolt.db import connect
 import time
 
-# Firebolt Cloud Credentials
-CLIENT_ID = "REDACTED_CLIENT_ID"
-CLIENT_SECRET = "REDACTED_CLIENT_SECRET"
-ACCOUNT_NAME = "se-demo-account"
-ENGINE_NAME = "ecommerceengine"
+# Firebolt Cloud Credentials (loaded from environment variables)
+CLIENT_ID = os.environ.get("FIREBOLT_CLIENT_ID")
+CLIENT_SECRET = os.environ.get("FIREBOLT_CLIENT_SECRET")
+ACCOUNT_NAME = os.environ.get("FIREBOLT_ACCOUNT_NAME", "se-demo-account")
+ENGINE_NAME = os.environ.get("FIREBOLT_ENGINE", "ecommerceengine")
 DATABASE_NAME = "late_materialization_demo"
+
+# Validate required environment variables
+if not CLIENT_ID or not CLIENT_SECRET:
+    print("ERROR: Missing required environment variables!")
+    print("Please set:")
+    print("  export FIREBOLT_CLIENT_ID=your_client_id")
+    print("  export FIREBOLT_CLIENT_SECRET=your_client_secret")
+    print("  export FIREBOLT_ACCOUNT_NAME=your_account_name  # Optional, defaults to 'se-demo-account'")
+    print("  export FIREBOLT_ENGINE=your_engine_name  # Optional, defaults to 'ecommerceengine'")
+    sys.exit(1)
 
 def print_step(step, message):
     """Print a formatted step message"""

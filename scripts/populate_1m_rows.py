@@ -2,18 +2,36 @@
 """
 Standalone script to populate demo_events table with 2 million rows
 Run this directly: python3 populate_1m_rows.py
+
+Required environment variables:
+- FIREBOLT_CLIENT_ID
+- FIREBOLT_CLIENT_SECRET
+- FIREBOLT_ACCOUNT_NAME (optional, defaults to 'se-demo-account')
+- FIREBOLT_ENGINE (optional, defaults to 'ecommerceengine')
 """
 
+import os
+import sys
 from firebolt.client import DEFAULT_API_URL
 from firebolt.client.auth import ClientCredentials
 from firebolt.db import connect
 
-# Credentials from ../secrets
-CLIENT_ID = "REDACTED_CLIENT_ID"
-CLIENT_SECRET = "REDACTED_CLIENT_SECRET"
-ACCOUNT_NAME = "se-demo-account"
+# Load credentials from environment variables
+CLIENT_ID = os.environ.get("FIREBOLT_CLIENT_ID")
+CLIENT_SECRET = os.environ.get("FIREBOLT_CLIENT_SECRET")
+ACCOUNT_NAME = os.environ.get("FIREBOLT_ACCOUNT_NAME", "se-demo-account")
 DATABASE_NAME = "late_materialization_demo"
-ENGINE_NAME = "ecommerceengine"
+ENGINE_NAME = os.environ.get("FIREBOLT_ENGINE", "ecommerceengine")
+
+# Validate required environment variables
+if not CLIENT_ID or not CLIENT_SECRET:
+    print("ERROR: Missing required environment variables!")
+    print("Please set:")
+    print("  export FIREBOLT_CLIENT_ID=your_client_id")
+    print("  export FIREBOLT_CLIENT_SECRET=your_client_secret")
+    print("  export FIREBOLT_ACCOUNT_NAME=your_account_name  # Optional")
+    print("  export FIREBOLT_ENGINE=your_engine_name  # Optional")
+    sys.exit(1)
 
 print("=" * 80)
 print("Populating demo_events with 2 million rows")

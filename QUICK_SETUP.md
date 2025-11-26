@@ -8,7 +8,20 @@ This guide will help you set up a dedicated demo database in under 5 minutes.
 - Firebolt Cloud account (use service account credentials)
 - firebolt-sdk installed (`pip install firebolt-sdk`)
 
-## Step 1: Create the Demo Database
+## Step 1: Set Environment Variables
+
+Before running the setup script, export your Firebolt credentials:
+
+```bash
+export FIREBOLT_CLIENT_ID="your_client_id_here"
+export FIREBOLT_CLIENT_SECRET="your_client_secret_here"
+export FIREBOLT_ACCOUNT_NAME="your_account_name"  # Optional, defaults to 'se-demo-account'
+export FIREBOLT_ENGINE="your_engine_name"  # Optional, defaults to 'ecommerceengine'
+```
+
+**Security Note:** Never hardcode credentials in scripts. Always use environment variables.
+
+## Step 2: Create the Demo Database
 
 Run the automated setup script:
 
@@ -45,7 +58,7 @@ STEP 4: Verifying Setup
 STEP COMPLETE: Database Setup Successful!
 ```
 
-## Step 2: Configure the Demo Application
+## Step 3: Configure the Demo Application
 
 Create your `.env.local` file:
 
@@ -62,7 +75,7 @@ FIREBOLT_CLIENT_ID=your_client_id_here
 FIREBOLT_CLIENT_SECRET=your_client_secret_here
 ```
 
-## Step 3: Start the Demo
+## Step 4: Start the Demo
 
 ```bash
 npm run dev
@@ -70,7 +83,7 @@ npm run dev
 
 Open http://localhost:3000 in your browser.
 
-## Step 4: Connect and Test
+## Step 5: Connect and Test
 
 1. Enter your Firebolt credentials in the connection form
 2. Click "Test Connection"
