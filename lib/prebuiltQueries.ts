@@ -78,9 +78,9 @@ LIMIT 10`,
         THEN 'DISABLED' 
         ELSE 'ENABLED' 
     END AS optimization_status,
-    ROUND(duration_usec / 1000000.0, 3) AS duration_seconds,
+    ROUND(duration_us / 1000000.0, 3) AS duration_seconds,
     ROUND(scanned_bytes / (1024.0 * 1024 * 1024), 2) AS scanned_gb,
-    rows_returned,
+    scanned_rows,
     TO_CHAR(start_time, 'HH24:MI:SS') as time
 FROM information_schema.engine_query_history
 WHERE query_text LIKE '%FROM demo_events%ORDER BY%'
@@ -139,7 +139,7 @@ SELECT * FROM demo_events ORDER BY event_timestamp DESC LIMIT 100`,
     sql: `-- Run this to see which queries benefited most
 SELECT 
     LEFT(query_text, 80) as query_preview,
-    ROUND(duration_usec / 1000000.0, 2) AS seconds,
+    ROUND(duration_us / 1000000.0, 2) AS seconds,
     ROUND(scanned_bytes / (1024.0 * 1024 * 1024), 2) AS gb_scanned
 FROM information_schema.engine_query_history
 WHERE query_text LIKE '%ORDER BY%LIMIT%'
