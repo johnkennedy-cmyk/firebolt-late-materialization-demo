@@ -1,9 +1,11 @@
-import { ClientCredentials } from 'firebolt-sdk/auth';
-import { connect } from 'firebolt-sdk/db';
 import { FireboltCredentials, QueryResult } from './types';
+
+// Use require for CommonJS module
+const { Firebolt } = require('firebolt-sdk');
 
 export class FireboltClient {
   private credentials: FireboltCredentials;
+  private fireboltInstance: any;
   private connection: any;
 
   constructor(credentials: FireboltCredentials) {
@@ -12,13 +14,17 @@ export class FireboltClient {
 
   async getConnection(): Promise<any> {
     if (!this.connection) {
-      const auth = new ClientCredentials(
-        this.credentials.clientId,
-        this.credentials.clientSecret
-      );
+      // Initialize Firebolt client
+      this.fireboltInstance = Firebolt();
+      
+      // Authenticate
+      await this.fireboltInstance.authenticate({
+        username: this.credentials.clientId,
+        password: this.credentials.clientSecret,
+      });
 
-      this.connection = await connect({
-        auth,
+      // Connect to database and engine
+      this.connection = await this.fireboltInstance.connect({
         database: this.credentials.database,
         engineName: this.credentials.engine,
       });
@@ -29,12 +35,10 @@ export class FireboltClient {
   async testConnection(): Promise<boolean> {
     try {
       const conn = await this.getConnection();
-      const cursor = conn.cursor();
+      const statement = await conn.execute('SELECT 1 as test');
+      const { data } = await statement.fetchResult();
       
-      await cursor.execute('SELECT 1 as test');
-      const result = await cursor.fetchall();
-      
-      return result && result.length > 0;
+      return data && data.length > 0;
     } catch (error) {
       console.error('Connection test failed:', error);
       return false;
@@ -46,24 +50,22 @@ export class FireboltClient {
     
     try {
       const conn = await this.getConnection();
-      const cursor = conn.cursor();
-      
-      await cursor.execute(query);
-      const rows = await cursor.fetchall();
+      const statement = await conn.execute(query);
+      const { data, meta } = await statement.fetchResult();
       
       const endTime = Date.now();
       const executionTime = (endTime - startTime) / 1000; // Convert to seconds
 
-      // Extract column names from cursor description
-      const columns = cursor.description ? cursor.description.map((col: any) => col[0]) : [];
+      // Extract column names from metadata
+      const columns = meta ? meta.map((col: any) => col.name) : [];
       
       // Determine if query was optimized (has ORDER BY and LIMIT <= 10)
       const optimized = this.isQueryOptimized(query);
 
       return {
         columns,
-        rows,
-        rowCount: rows.length,
+        rows: data || [],
+        rowCount: data ? data.length : 0,
         executionTime,
         dataScanned: 0, // SDK doesn't provide this directly, would need query stats
         query,
@@ -79,7 +81,6 @@ export class FireboltClient {
   async getQueryStats(queryId: string): Promise<{ duration_usec: number; scanned_bytes: number }> {
     try {
       const conn = await this.getConnection();
-      const cursor = conn.cursor();
 
       const statsQuery = `
         SELECT 
@@ -90,13 +91,13 @@ export class FireboltClient {
         LIMIT 1
       `;
 
-      await cursor.execute(statsQuery);
-      const result = await cursor.fetchall();
+      const statement = await conn.execute(statsQuery);
+      const { data } = await statement.fetchResult();
       
-      if (result && result.length > 0) {
+      if (data && data.length > 0) {
         return {
-          duration_usec: result[0][0] || 0,
-          scanned_bytes: result[0][1] || 0,
+          duration_usec: data[0][0] || 0,
+          scanned_bytes: data[0][1] || 0,
         };
       }
       
