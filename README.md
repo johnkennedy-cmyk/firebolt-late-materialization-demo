@@ -11,20 +11,38 @@
 
 Late materialization is an automatic query optimization introduced in Firebolt 4.28 that dramatically accelerates top-K queries (queries with `ORDER BY` + `LIMIT`). Instead of reading all columns for all rows before sorting, Firebolt:
 
-1. **Reads only the sorting column** to identify which rows qualify
-2. **Fetches remaining columns** for just those qualifying rows
-3. **Returns results up to 30x faster** with 50x less data scanned
+1. **First scan**: Reads only the sorting column + internal row identifiers
+2. **Sorts and limits**: Identifies the top K rows
+3. **Second scan**: Fetches remaining columns for just those K rows (pruned via join)
+4. **Returns results**: Up to 30x faster with 50x less data scanned
 
 **The best part?** It's completely automatic for `LIMIT ≤ 10`. No configuration needed!
 
+### 🔬 Two Conditions for Maximum Benefit
+
+From the [official documentation](https://docs.firebolt.io/performance-and-observability/query-planning/late-materialization), late materialization provides benefit when **BOTH** conditions are met:
+
+1. **Large Column Size**: Wide tables with large TEXT/JSON columns (thousands of characters)
+2. **High Row Count Difference**: Many rows scanned, but few returned (millions → 10)
+
+**Best case**: SELECT * from 100M row table with 105 columns, LIMIT 10
+- Result: **16s → 0.5s** (32x faster), **87GB → 1.5GB** (58x less data)
+
+**No benefit**: Small columns (2-3 chars) or pre-filtered data (WHERE reduces to <100 rows)
+
 ## 🎯 Features
 
-- **Interactive Query Execution**: Run pre-built examples or write custom SQL queries
-- **Real-Time Performance Metrics**: See actual execution time and data scanned
-- **Visual Comparisons**: Charts showing optimized vs. non-optimized query performance
-- **6 Example Queries**: Demonstrating when late materialization applies and when it doesn't
-- **Secure Connection**: Credentials never exposed to the browser (API routes handle all database communication)
-- **Query History**: Track your queries and compare performance across runs
+- **Evidence-Based Benchmarking**: Before/after comparison with `WITH late_materialization_max_rows = 0`
+- **Query Plan Analysis**: EXPLAIN queries show the two-scan pattern that proves optimization
+- **Real Performance Metrics**: Query history analysis from `information_schema.engine_query_history`
+- **9 Example Queries**: Demonstrating when it helps (and when it doesn't)
+  - ✅ Optimized examples showing maximum benefit
+  - ❌ Disabled comparisons for baseline
+  - 🔍 EXPLAIN queries proving the optimization pattern
+  - 📊 Query history analysis with concrete metrics
+- **Two Conditions Framework**: Clear demonstration of column size + row count difference
+- **Secure Connection**: Credentials never exposed to the browser
+- **Interactive Learning**: Understand WHY it works, not just that it does
 
 ## 🚀 Quick Start
 
@@ -155,16 +173,24 @@ Enter your credentials in the connection form at the top of the page. Click "Tes
 
 ### 2. Try Pre-Built Examples
 
-The "Pre-built Examples" tab includes 6 queries:
+The "Pre-built Examples" tab includes 9 evidence-based queries:
 
-1. **Events Top 10** - Automatic optimization (LIMIT ≤ 10)
-2. **API Debugging** - Slowest requests (production scenario)
-3. **No LIMIT** - Shows when optimization doesn't apply
-4. **LIMIT 100 (No Config)** - Not optimized by default
-5. **LIMIT 100 (WITH Clause)** - Using inline configuration
-6. **LIMIT 100 (SET Command)** - Using session configuration
+**Proof Queries:**
+1. **✅ OPTIMIZED: Events Top 10** - See it in action
+2. **❌ DISABLED: Events Top 10** - Baseline for comparison
+3. **🔍 EXPLAIN (Optimized)** - Shows two-scan pattern with $tablet_id join
+4. **🔍 EXPLAIN (Disabled)** - Shows single-scan pattern
 
-Click "Run Query" on any example to see real performance metrics.
+**Condition Demonstrations:**
+5. **Large Column Benefit** - debug_trace (thousands of chars) demonstrates CONDITION 1
+6. **Small Column No Benefit** - event_type (2-3 chars) shows when it doesn't help
+
+**Analysis Tools:**
+7. **📊 Query History** - See actual metrics from your queries
+8. **Extended LIMIT Config** - How to enable for LIMIT > 10
+9. **📋 Decision Matrix** - When does it help summary
+
+Click "Run Query" to see real performance metrics. **Run disabled first, then optimized to compare!**
 
 ### 3. Write Custom Queries
 
@@ -246,37 +272,52 @@ firebolt-late-materialization-demo/
     └── create-demo-data.sql        # Sample table schema
 ```
 
-## 🔍 Understanding Late Materialization
+## 🔍 Proving Late Materialization Works
 
-### When It Applies
+### Step 1: Run Baseline (Disabled)
 
-Late materialization automatically optimizes queries that:
+```sql
+SELECT * FROM demo_events ORDER BY event_timestamp DESC LIMIT 10
+WITH late_materialization_max_rows = 0;
+```
 
-✅ Have `ORDER BY` clause  
-✅ Have `LIMIT` clause  
-✅ `LIMIT ≤ 10` (automatic) OR configured with `late_materialization_max_rows`
+### Step 2: Run Optimized (Enabled)
 
-### When It Doesn't Apply
+```sql
+SELECT * FROM demo_events ORDER BY event_timestamp DESC LIMIT 10;
+```
 
-❌ No `LIMIT` clause  
-❌ `LIMIT > 10` without configuration  
-❌ No `ORDER BY` clause  
-❌ Queries with `DISTINCT`, `GROUP BY`, or aggregations
+### Step 3: Check Query Plan
 
-### Performance Expectations
+```sql
+EXPLAIN SELECT * FROM demo_events ORDER BY event_timestamp DESC LIMIT 10;
+```
 
-The speedup depends on:
-- **Table width**: More columns = bigger speedup
-- **Column sizes**: Large TEXT/JSON fields = bigger speedup
-- **LIMIT value**: Smaller limit = bigger speedup
+**Look for:** Two StoredTable scans joined on `$tablet_id` and `$tablet_row_number`
 
-**Real-world examples:**
+### Step 4: Compare Metrics
 
-| Scenario | Before | After | Speedup |
-|----------|--------|-------|---------|
-| 100M rows, 105 columns | 16s, 87 GB | 0.5s, 1.5 GB | 32x faster |
-| API logs, debug traces | 11s, 45 GB | 0.2s, 0.8 GB | 55x faster |
-| Wide e-commerce table | 18s, 87 GB | 0.8s, 3.2 GB | 22x faster |
+```sql
+SELECT 
+    CASE WHEN query_text LIKE '%late_materialization_max_rows = 0%' 
+         THEN 'DISABLED' ELSE 'ENABLED' END AS status,
+    ROUND(duration_usec / 1000000.0, 3) AS seconds,
+    ROUND(scanned_bytes / (1024.0 * 1024), 2) AS mb_scanned
+FROM information_schema.engine_query_history
+WHERE query_text LIKE '%FROM demo_events%ORDER BY event_timestamp%'
+ORDER BY start_time DESC LIMIT 4;
+```
+
+**See [BENCHMARKING_GUIDE.md](BENCHMARKING_GUIDE.md) for comprehensive testing instructions.**
+
+### Decision Matrix
+
+| Condition Met? | Column Size | Row Count Diff | Expected Result |
+|----------------|-------------|----------------|-----------------|
+| ✅ BOTH | Large (1000s chars) | High (millions→10) | **30x+ improvement** |
+| ⚠️ Column only | Large | Low (filtered) | No benefit or slower |
+| ⚠️ Row count only | Small (2-3 chars) | High | Minimal benefit |
+| ❌ Neither | Small | Low | No benefit |
 
 ## 🔒 Security Best Practices
 

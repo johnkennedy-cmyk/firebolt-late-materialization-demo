@@ -1,44 +1,40 @@
-const { Firebolt } = require('firebolt-sdk');
+import { ClientCredentials } from 'firebolt-sdk/auth';
+import { connect } from 'firebolt-sdk/db';
 import { FireboltCredentials, QueryResult } from './types';
 
 export class FireboltClient {
   private credentials: FireboltCredentials;
-  private client: any;
+  private connection: any;
 
   constructor(credentials: FireboltCredentials) {
     this.credentials = credentials;
   }
 
-  async connect(): Promise<void> {
-    try {
-      this.client = Firebolt({
-        auth: {
-          client_id: this.credentials.clientId,
-          client_secret: this.credentials.clientSecret,
-        },
+  async getConnection(): Promise<any> {
+    if (!this.connection) {
+      const auth = new ClientCredentials(
+        this.credentials.clientId,
+        this.credentials.clientSecret
+      );
+
+      this.connection = await connect({
+        auth,
+        database: this.credentials.database,
+        engineName: this.credentials.engine,
       });
-    } catch (error) {
-      console.error('Failed to initialize Firebolt client:', error);
-      throw new Error('Failed to connect to Firebolt');
     }
+    return this.connection;
   }
 
   async testConnection(): Promise<boolean> {
     try {
-      if (!this.client) {
-        await this.connect();
-      }
+      const conn = await this.getConnection();
+      const cursor = conn.cursor();
       
-      const connection = await this.client.connect({
-        database: this.credentials.database,
-        engineName: this.credentials.engine,
-      });
-
-      // Test with a simple query
-      const statement = await connection.execute('SELECT 1 as test');
-      const result = await statement.fetchResult();
+      await cursor.execute('SELECT 1 as test');
+      const result = await cursor.fetchall();
       
-      return result && result.rows && result.rows.length > 0;
+      return result && result.length > 0;
     } catch (error) {
       console.error('Connection test failed:', error);
       return false;
@@ -49,25 +45,17 @@ export class FireboltClient {
     const startTime = Date.now();
     
     try {
-      if (!this.client) {
-        await this.connect();
-      }
-
-      const connection = await this.client.connect({
-        database: this.credentials.database,
-        engineName: this.credentials.engine,
-      });
-
-      const statement = await connection.execute(query);
-      const result = await statement.fetchResult();
+      const conn = await this.getConnection();
+      const cursor = conn.cursor();
+      
+      await cursor.execute(query);
+      const rows = await cursor.fetchall();
       
       const endTime = Date.now();
       const executionTime = (endTime - startTime) / 1000; // Convert to seconds
 
-      // Extract metadata
-      const meta = result.meta || [];
-      const columns = meta.map((col: any) => col.name || '');
-      const rows = result.rows || [];
+      // Extract column names from cursor description
+      const columns = cursor.description ? cursor.description.map((col: any) => col[0]) : [];
       
       // Determine if query was optimized (has ORDER BY and LIMIT <= 10)
       const optimized = this.isQueryOptimized(query);
@@ -90,14 +78,8 @@ export class FireboltClient {
 
   async getQueryStats(queryId: string): Promise<{ duration_usec: number; scanned_bytes: number }> {
     try {
-      if (!this.client) {
-        await this.connect();
-      }
-
-      const connection = await this.client.connect({
-        database: this.credentials.database,
-        engineName: this.credentials.engine,
-      });
+      const conn = await this.getConnection();
+      const cursor = conn.cursor();
 
       const statsQuery = `
         SELECT 
@@ -108,13 +90,13 @@ export class FireboltClient {
         LIMIT 1
       `;
 
-      const statement = await connection.execute(statsQuery);
-      const result = await statement.fetchResult();
+      await cursor.execute(statsQuery);
+      const result = await cursor.fetchall();
       
-      if (result.rows && result.rows.length > 0) {
+      if (result && result.length > 0) {
         return {
-          duration_usec: result.rows[0][0] || 0,
-          scanned_bytes: result.rows[0][1] || 0,
+          duration_usec: result[0][0] || 0,
+          scanned_bytes: result[0][1] || 0,
         };
       }
       
