@@ -200,7 +200,7 @@ export default function Home() {
                   className={`px-6 py-3 font-semibold rounded-xl transition-all duration-200 ${
                     activeTab === 'prebuilt'
                       ? 'bg-firebolt-red text-white shadow-md'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                      : 'text-gray-900 hover:text-gray-900 hover:bg-gray-100'
                   }`}
                 >
                   Pre-built Examples
@@ -210,7 +210,7 @@ export default function Home() {
                   className={`px-6 py-3 font-semibold rounded-xl transition-all duration-200 ${
                     activeTab === 'editor'
                       ? 'bg-firebolt-red text-white shadow-md'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                      : 'text-gray-900 hover:text-gray-900 hover:bg-gray-100'
                   }`}
                 >
                   Query Editor
