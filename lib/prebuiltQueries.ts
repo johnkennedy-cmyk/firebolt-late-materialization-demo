@@ -6,7 +6,7 @@ export const prebuiltQueries: PrebuiltQuery[] = [
     title: 'Events Top 10',
     description: 'Get the 10 most recent events',
     useCase: 'Customer-facing analytics: Perfect for leaderboards, recent activity feeds, and dashboards. This query is automatically optimized with no configuration needed.',
-    sql: 'SELECT * FROM events ORDER BY timestamp DESC LIMIT 10',
+    sql: 'SELECT * FROM demo_events ORDER BY event_timestamp DESC LIMIT 10',
     optimized: true,
     badge: 'Optimized automatically',
     badgeColor: 'green',
@@ -24,7 +24,7 @@ export const prebuiltQueries: PrebuiltQuery[] = [
     useCase: 'Operational monitoring: Critical for debugging production incidents. Automatically optimized even with large debug_trace columns.',
     sql: `SELECT response_time, endpoint, debug_trace
 FROM api_logs
-WHERE timestamp >= NOW() - INTERVAL '1 hour'
+WHERE log_timestamp >= NOW() - INTERVAL '1 hour'
 ORDER BY response_time DESC
 LIMIT 10`,
     optimized: true,
@@ -42,7 +42,7 @@ LIMIT 10`,
     title: 'No LIMIT',
     description: 'Get all events without a LIMIT clause',
     useCase: 'Shows when late materialization does NOT apply. Without a LIMIT, all rows must be processed.',
-    sql: 'SELECT * FROM events ORDER BY timestamp DESC',
+    sql: 'SELECT * FROM demo_events ORDER BY event_timestamp DESC',
     optimized: false,
     badge: 'Not optimized - no LIMIT',
     badgeColor: 'gray',
@@ -52,7 +52,7 @@ LIMIT 10`,
     title: 'LIMIT 100 (No Config)',
     description: 'Get 100 events without configuration',
     useCase: 'Demonstrates the default threshold. LIMIT > 10 requires explicit configuration to enable optimization.',
-    sql: 'SELECT * FROM events ORDER BY timestamp DESC LIMIT 100',
+    sql: 'SELECT * FROM demo_events ORDER BY event_timestamp DESC LIMIT 100',
     optimized: false,
     badge: 'Not optimized - LIMIT > 10',
     badgeColor: 'gray',
@@ -62,7 +62,7 @@ LIMIT 10`,
     title: 'LIMIT 100 (WITH Clause)',
     description: 'Get 100 events with inline configuration',
     useCase: 'E-commerce & retail: Analyze top products or transactions. The WITH clause enables optimization for larger result sets.',
-    sql: `SELECT * FROM events ORDER BY timestamp DESC LIMIT 100
+    sql: `SELECT * FROM demo_events ORDER BY event_timestamp DESC LIMIT 100
 WITH late_materialization_max_rows = 100`,
     optimized: true,
     badge: 'Optimized with WITH clause',
@@ -80,7 +80,7 @@ WITH late_materialization_max_rows = 100`,
     description: 'Set configuration for the session, then query',
     useCase: 'AdTech & marketing: Analyze top-performing campaigns. SET applies to all subsequent queries in the session.',
     sql: `SET late_materialization_max_rows = 100;
-SELECT * FROM events ORDER BY timestamp DESC LIMIT 100`,
+SELECT * FROM demo_events ORDER BY event_timestamp DESC LIMIT 100`,
     optimized: true,
     badge: 'Optimized with SET',
     badgeColor: 'blue',
