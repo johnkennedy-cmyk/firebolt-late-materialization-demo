@@ -1,0 +1,43 @@
+# ============================================================================
+# Cursor Ignore - Firebolt Late Materialization Demo
+# ============================================================================
+# Prevents Cursor AI from reading sensitive files in this project
+
+# =========================
+# Credentials & Secrets
+# =========================
+.env
+.env.*
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# =========================
+# Private Keys
+# =========================
+*.pem
+*.key
+*.secret
+
+# =========================
+# Credential Files
+# =========================
+credentials.json
+secrets.json
+service-account.json
+service-account-*.json
+*.credentials
+
+# =========================
+# Firebolt Specific
+# =========================
+# Any file containing Firebolt credentials
+firebolt-credentials*
+firebolt-config.local*
+
+# =========================
+# Local Config
+# =========================
+config.local.json
+local.settings.json
